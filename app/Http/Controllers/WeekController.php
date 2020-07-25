@@ -11,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 class WeekController extends Controller
@@ -23,19 +22,20 @@ class WeekController extends Controller
      */
     public function index()
     {
-        $now  = now()->toDate()->format('Y-m-d');
-        $week = Week::with('days.meal')->where([['start_date', '<=', $now], ['end_date', '>=', $now]])->first();
-
+        $week = Week::with('days.meal')->first();
         return view('week.index', compact('week'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|RedirectResponse|View
      */
     public function create()
     {
+        if (count(Week::all()) > 0) {
+            return redirect(route('week.index'));
+        }
         return view('week.create');
     }
 
@@ -49,18 +49,14 @@ class WeekController extends Controller
     {
         $days       = $request->days;
         $effort     = $request->effort;
-        $duplicates = $request->duplicates;
 
-        $week = Week::create([
-            'start_date' => now()->toDate()->format('Y-m-d'),
-            'end_date'   => now()->addDays($days)->format('Y-m-d')
-        ]);
+        $week = new Week();
 
-        if ($duplicates) {
-            $meals = Meal::where(['effort' => $effort])->inRandomOrder()->limit($days)->get();
-        } else {
-            $meals = Meal::distinct()->where(['effort' => $effort])->inRandomOrder()->limit($days)->get();
-        }
+        $week->start_date = now()->toDate()->format('Y-m-d');
+        $week->end_date = now()->addDays($days)->format('Y-m-d');
+        $week->save();
+
+        $meals = Meal::distinct()->where(['effort' => $effort])->inRandomOrder()->limit($days)->get();
 
         $meals->each(function($meal, $index) use($week) {
             $day = Day::create([
@@ -71,9 +67,8 @@ class WeekController extends Controller
             $day->meal()->save($meal);
             $week->days()->save($day);
         });
-        $week = Week::with('days.meal')->where('id', $week->id)->first();
 
-        return redirect(route('week.index', ['week' => $week]));
+        return redirect(route('week.index'));
     }
 
     /**
@@ -114,10 +109,15 @@ class WeekController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Week $week
-     * @return Response
+     * @return Application|RedirectResponse|Redirector
      */
     public function destroy(Week $week)
     {
-        //
+        try {
+            $week->delete();
+        } catch (\Exception $e) {
+            dd('failed to delete: ' . $e->__toString());
+        }
+        return redirect(route('week.index'));
     }
 }

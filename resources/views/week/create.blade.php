@@ -31,15 +31,6 @@
                         <label>Effort</label>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <select name="duplicates">
-                            <option value="0">Nej</option>
-                            <option value="1">Ja</option>
-                        </select>
-                        <label>Dublikanter</label>
-                    </div>
-                </div>
                 <div class="center-align">
                     <button type="submit" class="waves-effect waves-light btn valign-wrapper">Opret</button>
                 </div>

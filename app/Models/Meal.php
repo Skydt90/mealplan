@@ -10,7 +10,7 @@ class Meal extends Model
         'effort', 'name'
     ];
     public const CHEFS = [
-        'Christian', 'Camilla'
+        'Chr', 'Cam'
     ];
     public const EFFORT = [
         1 => 'Ingen', 2 => 'Nemt', 3 => 'Gennemsnitlig', 4 => 'Omfattende'

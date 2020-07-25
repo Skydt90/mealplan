@@ -18,17 +18,23 @@
                 <tbody>
                 @foreach($week->days as $day)
                     <tr>
-                        <td>{{ $day->meal->name  }}</td>
+                        <td>{{ $day->meal ?? '' ? $day->meal->name : '' }}</td>
                         <td>{{ $day->chef }}</td>
                         <td>{{ $day->date }}</td>
-                        <td>{{ $day->meal->effort }}</td>
+                        <td>{{ $day->meal ?? '' ? $day->meal->effort : '' }}</td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
             <br>
-            <div class="col s12 center-align">
-                <a class="btn z-depth-1" href="{{ route('week.create') }}">Ny Madplan</a>
+            <div class="row">
+                <div class="col s12 center-align">
+                    <form class="inline" action="{{ route('week.destroy', $week->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="waves-effect waves-light btn red">Ryd Madplan</button>
+                    </form>
+                </div>
             </div>
         @else
             <br>
