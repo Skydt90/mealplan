@@ -1,4 +1,5 @@
 @extends('partials.header')
+
 @section('content')
 
     <div class="container">
