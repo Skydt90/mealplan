@@ -13,5 +13,6 @@
 
 use Illuminate\Support\Facades\Route;
 
+Auth::routes();
 Route::get('/', 'WeekController@index');
 Route::resource('week', 'WeekController');

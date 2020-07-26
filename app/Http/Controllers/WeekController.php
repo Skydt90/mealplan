@@ -47,6 +47,10 @@ class WeekController extends Controller
      */
     public function store(Request $request)
     {
+        if (count(Week::all()) > 0) {
+            return redirect(route('week.index'));
+        }
+
         $days       = $request->days;
         $effort     = $request->effort;
 
